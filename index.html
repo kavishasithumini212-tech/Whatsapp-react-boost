@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#050505" />
+  <title>WA REACT BOOST | WhatsApp Channel Engagement Platform</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'Noto Sans Sinhala', 'sans-serif'] },
+          colors: {
+            cyber: { black: '#050505', dark: '#0B0F17', card: '#111827', wa: '#25D366', neon: '#00FF88' }
+          },
+          boxShadow: {
+            'neon': '0 0 20px rgba(0, 255, 136, 0.25)',
+            'wa': '0 0 18px rgba(37, 211, 102, 0.3)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Lucide Icons & Chart.js -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { font-family: 'Inter', 'Noto Sans Sinhala', sans-serif; overflow-x: hidden; }
+    .glass-panel { background: rgba(17, 24, 39, 0.68); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    html:not(.dark) .glass-panel { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(17, 24, 39, 0.08); }
+    .neon-gradient-text { background: linear-gradient(135deg, #25D366 0%, #00FF88 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .cyber-grid-bg {
+      background-image: radial-gradient(circle at 15% 15%, rgba(37, 211, 102, 0.08) 0%, transparent 40%), linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 36px 36px, 36px 36px;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(37, 211, 102, 0.35); border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-[#050505] text-white cyber-grid-bg min-h-screen flex flex-col selection:bg-[#00FF88] selection:text-black">
+
+  <!-- LOADING SCREEN -->
+  <div id="loader-screen" class="fixed inset-0 z-[100] bg-[#050505] flex flex-col items-center justify-center p-6 transition-opacity duration-500">
+    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#25D366] to-[#00FF88] p-[2px] mb-4 animate-pulse">
+      <div class="w-full h-full bg-[#050505] rounded-2xl flex items-center justify-center">
+        <i data-lucide="zap" class="w-8 h-8 text-[#00FF88]"></i>
+      </div>
+    </div>
+    <h1 class="text-2xl font-extrabold mb-1">WA REACT <span class="neon-gradient-text">BOOST</span></h1>
+    <p class="text-xs text-gray-400 mb-6 uppercase tracking-widest">Community Engagement SaaS</p>
+    <div class="w-full max-w-xs bg-gray-900 rounded-full h-2.5 p-[2px] border border-gray-800 overflow-hidden mb-2">
+      <div id="loader-bar" class="h-full rounded-full bg-gradient-to-r from-[#25D366] to-[#00FF88] transition-all duration-75" style="width: 1%;"></div>
+    </div>
+    <div class="flex justify-between w-full max-w-xs text-xs font-mono text-gray-400">
+      <span id="loader-status">Initializing Ecosystem...</span>
+      <span id="loader-percent" class="text-[#00FF88] font-bold">1%</span>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[90] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4"></div>
+
+  <!-- CUSTOM MODAL -->
+  <div id="custom-modal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-panel rounded-2xl max-w-md w-full p-6 border border-gray-700">
+      <h3 id="modal-title" class="text-lg font-bold mb-3">Confirm</h3>
+      <div id="modal-body" class="text-sm text-gray-300 mb-5"></div>
+      <div class="flex justify-end gap-3">
+        <button onclick="closeModal()" class="px-4 py-2 rounded-xl bg-gray-800 text-gray-200 text-sm">Cancel</button>
+        <button id="modal-confirm-btn" class="px-4 py-2 rounded-xl bg-[#00FF88] text-black font-bold text-sm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP SHELL -->
+  <div class="flex flex-1 min-h-screen">
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-40 hidden lg:hidden"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 glass-panel border-r border-gray-800 flex flex-col justify-between transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+      <div>
+        <div class="p-5 flex items-center justify-between border-b border-gray-800">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#25D366] to-[#00FF88] flex items-center justify-center text-black">
+              <i data-lucide="zap" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="font-extrabold text-sm block">WA REACT <span class="text-[#00FF88]">BOOST</span></span>
+              <span class="text-[10px] text-gray-400">Engagement SaaS</span>
+            </div>
+          </div>
+          <button onclick="toggleSidebar()" class="lg:hidden p-2 text-gray-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+
+        <div class="p-4 mx-3 mt-4 rounded-2xl bg-[#25D366]/15 border border-[#25D366]/30">
+          <p id="sidebar-username" class="text-sm font-bold">Oneth Rathsara</p>
+          <div class="flex justify-between items-center mt-2 text-xs">
+            <span class="text-gray-400">Points</span>
+            <span class="font-extrabold text-[#00FF88]"><span id="sidebar-points">320</span> PTS</span>
+          </div>
+        </div>
+
+        <nav class="p-3 space-y-1 mt-2">
+          <button onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium bg-[#25D366]/15 text-[#00FF88] border border-[#00FF88]/30">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+          </button>
+          <button onclick="navigateTo('engage')" data-nav="engage" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white">
+            <div class="flex items-center gap-3"><i data-lucide="heart-handshake" class="w-4 h-4"></i> React & Earn</div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#25D366] text-black">+10 PTS</span>
+          </button>
+          <button onclick="navigateTo('channels')" data-nav="channels" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white">
+            <i data-lucide="radio" class="w-4 h-4"></i> My Channels
+          </button>
+          <button onclick="navigateTo('rewards')" data-nav="rewards" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white">
+            <i data-lucide="trophy" class="w-4 h-4"></i> Rewards & Leaderboard
+          </button>
+          <button onclick="navigateTo('admin')" data-nav="admin" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-amber-400 border border-amber-500/20 mt-2">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i> Admin Panel
+          </button>
+        </nav>
+      </div>
+      <div class="p-4 border-t border-gray-800 text-xs text-gray-400 text-center">
+        Created by <span class="text-[#00FF88] font-bold">Oneth Rathsara</span>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <header class="sticky top-0 z-30 glass-panel border-b border-gray-800 px-4 sm:px-6 py-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl bg-white/5"><i data-lucide="menu" class="w-5 h-5"></i></button>
+          <h2 id="page-header-title" class="text-base sm:text-lg font-bold">Dashboard & Analytics</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleLanguage()" class="px-3 py-2 rounded-xl bg-white/5 text-xs font-bold">සිං / EN</button>
+          <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-white/5"><i id="theme-icon" data-lucide="sun" class="w-4 h-4 text-amber-400"></i></button>
+        </div>
+      </header>
+
+      <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="space-y-6">
+          <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-[#00FF88]/30 flex flex-col lg:flex-row justify-between items-center gap-6">
+            <div>
+              <span class="px-3 py-1 rounded-full bg-[#25D366]/20 text-[#00FF88] text-xs font-semibold mb-3 inline-block">100% Authentic Community Engagement</span>
+              <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Grow Your WhatsApp Channel with <span class="neon-gradient-text">Real Reactions</span></h1>
+              <p class="text-sm text-gray-400">Submit your WhatsApp Channel, react to posts voluntarily, earn reward points, and boost engagement safely.</p>
+            </div>
+            <button onclick="navigateTo('engage')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-[#25D366] to-[#00FF88] text-black font-bold text-sm shadow-neon shrink-0">
+              🚀 Start Reacting (+10 PTS)
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-panel rounded-2xl p-4">
+              <span class="text-xs text-gray-400">Total Channels</span>
+              <p id="stat-total-channels" class="text-2xl font-extrabold mt-1">5</p>
+            </div>
+            <div class="glass-panel rounded-2xl p-4">
+              <span class="text-xs text-gray-400">Genuine Reactions</span>
+              <p id="stat-total-reactions" class="text-2xl font-extrabold mt-1">446</p>
+            </div>
+            <div class="glass-panel rounded-2xl p-4">
+              <span class="text-xs text-gray-400">Active Users</span>
+              <p class="text-2xl font-extrabold mt-1 text-[#00FF88]">1,428</p>
+            </div>
+            <div class="glass-panel rounded-2xl p-4">
+              <span class="text-xs text-gray-400">My Points</span>
+              <p id="stat-my-points" class="text-2xl font-extrabold mt-1 text-[#00FF88]">320 PTS</p>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-3xl p-6">
+            <h3 class="text-base font-bold mb-4">Engagement Growth Analytics</h3>
+            <div class="h-64 w-full"><canvas id="engagementChart"></canvas></div>
+          </div>
+        </section>
+
+        <!-- ENGAGE VIEW -->
+        <section id="view-engage" class="hidden space-y-6">
+          <h2 class="text-xl font-extrabold">Voluntary Reaction Hub</h2>
+          <div id="engage-channels-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
+
+        <!-- CHANNELS VIEW -->
+        <section id="view-channels" class="hidden space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="glass-panel rounded-3xl p-6 lg:col-span-5">
+              <h3 class="text-lg font-bold mb-4">Submit WhatsApp Channel (50 PTS)</h3>
+              <form onsubmit="handleChannelSubmit(event)" class="space-y-4">
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">WhatsApp Channel Link *</label>
+                  <input type="url" id="ch-link" required placeholder="https://whatsapp.com/channel/..." class="w-full px-4 py-2.5 rounded-xl bg-black/50 border border-gray-700 text-xs text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">Channel Name *</label>
+                  <input type="text" id="ch-name" required placeholder="My Channel Name" class="w-full px-4 py-2.5 rounded-xl bg-black/50 border border-gray-700 text-xs text-white" />
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">Description *</label>
+                  <textarea id="ch-desc" required rows="2" placeholder="Short description..." class="w-full px-4 py-2.5 rounded-xl bg-black/50 border border-gray-700 text-xs text-white"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-[#25D366] to-[#00FF88] text-black font-bold text-xs">Submit Channel</button>
+              </form>
+            </div>
+            <div class="glass-panel rounded-3xl p-6 lg:col-span-7">
+              <h3 class="text-lg font-bold mb-4">My Submitted Channels</h3>
+              <div id="my-channels-list" class="space-y-3"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REWARDS VIEW -->
+        <section id="view-rewards" class="hidden space-y-6">
+          <div class="glass-panel rounded-3xl p-6 flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold">Daily Check-In Reward</h3>
+              <p class="text-xs text-gray-400">Claim your daily +25 loyalty points</p>
+            </div>
+            <button id="daily-checkin-btn" onclick="claimDailyCheckin()" class="px-5 py-2.5 rounded-xl bg-[#00FF88] text-black font-bold text-xs">Claim +25 PTS</button>
+          </div>
+          <div class="glass-panel rounded-3xl p-6">
+            <h3 class="text-lg font-bold mb-4">Top Community Leaderboard</h3>
+            <div id="leaderboard-list" class="space-y-3"></div>
+          </div>
+        </section>
+
+        <!-- ADMIN VIEW -->
+        <section id="view-admin" class="hidden space-y-6">
+          <div class="glass-panel rounded-3xl p-6">
+            <h3 class="text-lg font-bold mb-4">Channel Submissions Moderation Queue</h3>
+            <div id="admin-channels-list" class="space-y-3"></div>
+          </div>
+        </section>
+
+      </main>
+
+      <footer class="glass-panel border-t border-gray-800 py-6 px-6 text-center text-xs text-gray-400">
+        WA REACT BOOST &bull; Created by <span class="text-[#00FF88] font-bold">Oneth Rathsara</span> &copy; 2026
+      </footer>
+    </div>
+  </div>
+
+  <!-- APPLICATION SCRIPT -->
+  <script>
+    const state = {
+      lang: 'en',
+      currentView: 'dashboard',
+      user: { name: 'Oneth Rathsara', points: 320, claimedReactions: [], dailyCheckedIn: false },
+      channels: [
+        { id: 'ch-1', name: 'Sri Lanka Tech Hub', link: 'https://whatsapp.com/channel/0029Vb76Ri8JkK7GrUmDbp1x/574', category: 'Tech', desc: 'Daily tech and coding updates.', emojis: ['❤️', '🔥', '👍'], avatar: 'https://api.dicebear.com/7.x/shapes/svg?seed=Tech', status: 'approved', reactionsCount: 142, targetReactions: 200, ownerName: 'Oneth Rathsara' },
+        { id: 'ch-2', name: 'A/L Commerce Stream', link: 'https://whatsapp.com/channel/0029Va8xSample', category: 'Education', desc: 'Accounting & Economics notes.', emojis: ['👍', '🎉', '❤️'], avatar: 'https://api.dicebear.com/7.x/shapes/svg?seed=Comm', status: 'approved', reactionsCount: 89, targetReactions: 150, ownerName: 'Kasun Silva' },
+        { id: 'ch-3', name: 'CineLanka Trailers', link: 'https://whatsapp.com/channel/0029Va7zSample', category: 'Entertainment', desc: 'Latest movie trailers and updates.', emojis: ['🎬', '🔥', '❤️'], avatar: 'https://api.dicebear.com/7.x/shapes/svg?seed=Movie', status: 'pending', reactionsCount: 0, targetReactions: 100, ownerName: 'Dilshan Fernando' }
+      ]
+    };
+
+    // Loader Sequence
+    window.addEventListener('DOMContentLoaded', () => {
+      let p = 1;
+      const bar = document.getElementById('loader-bar');
+      const pct = document.getElementById('loader-percent');
+      const screen = document.getElementById('loader-screen');
+
+      const timer = setInterval(() => {
+        p += Math.floor(Math.random() * 15) + 10;
+        if (p >= 100) {
+          p = 100;
+          clearInterval(timer);
+          setTimeout(() => {
+            screen.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => screen.remove(), 400);
+          }, 200);
+        }
+        bar.style.width = p + '%';
+        pct.textContent = p + '%';
+      }, 50);
+
+      initCharts();
+      refreshAllViews();
+    });
+
+    window.navigateTo = function(viewId) {
+      state.currentView = viewId;
+      document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+      document.getElementById('view-' + viewId).classList.remove('hidden');
+      refreshAllViews();
+    };
+
+    window.showToast = function(msg, type = 'success') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `glass-panel border ${type==='error'?'border-rose-500':'border-[#00FF88]'} px-4 py-3 rounded-2xl shadow-xl text-xs font-medium`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    };
+
+    window.openModal = function(title, bodyHtml, onConfirm) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').innerHTML = bodyHtml;
+      const m = document.getElementById('custom-modal');
+      m.classList.remove('hidden'); m.classList.add('flex');
+      document.getElementById('modal-confirm-btn').onclick = () => { closeModal(); if(onConfirm) onConfirm(); };
+    };
+    window.closeModal = function() {
+      const m = document.getElementById('custom-modal');
+      m.classList.add('hidden'); m.classList.remove('flex');
+    };
+
+    function refreshAllViews() {
+      document.getElementById('sidebar-points').textContent = state.user.points;
+      document.getElementById('stat-my-points').textContent = state.user.points + ' PTS';
+      document.getElementById('stat-total-channels').textContent = state.channels.length;
+      renderEngage();
+      renderMyChannels();
+      renderLeaderboard();
+      renderAdminQueue();
+      lucide.createIcons();
+    }
+
+    function renderEngage() {
+      const grid = document.getElementById('engage-channels-grid');
+      const approved = state.channels.filter(c => c.status === 'approved');
+      grid.innerHTML = approved.map(ch => {
+        const claimed = state.user.claimedReactions.includes(ch.id);
+        const btns = ch.emojis.map(em => `
+          <button onclick="reactChannel('${ch.id}', '${em}')" ${claimed?'disabled':''} class="px-3 py-1.5 rounded-xl border text-sm ${claimed?'bg-gray-900 opacity-40':'bg-white/5 hover:border-[#00FF88]'}" title="React with ${em}">
+            ${em}
+          </button>`).join('');
+        return `
+          <div class="glass-panel rounded-3xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <img src="${ch.avatar}" class="w-10 h-10 rounded-xl bg-gray-900 object-cover" />
+                <div>
+                  <h4 class="font-bold text-sm">${ch.name}</h4>
+                  <p class="text-[11px] text-gray-400">by ${ch.ownerName}</p>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mb-4">${ch.desc}</p>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-2">
+                <span class="text-gray-400">Reactions: ${ch.reactionsCount}/${ch.targetReactions}</span>
+                <span class="text-[#00FF88] font-bold">${claimed?'Claimed ✓':'+10 PTS'}</span>
+              </div>
+              <div class="flex gap-2">${btns}</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    window.reactChannel = function(id, emoji) {
+      const ch = state.channels.find(c => c.id === id);
+      if(!ch || state.user.claimedReactions.includes(id)) return;
+      window.open(ch.link, '_blank');
+      openModal("Verify Reaction", `Did you leave a <strong>${emoji}</strong> reaction on <strong>${ch.name}</strong>? Click confirm to claim +10 PTS.`, () => {
+        state.user.claimedReactions.push(id);
+        state.user.points += 10;
+        ch.reactionsCount += 1;
+        showToast("Verified! +10 Points added.");
+        refreshAllViews();
+      });
+    };
+
+    window.handleChannelSubmit = function(e) {
+      e.preventDefault();
+      const link = document.getElementById('ch-link').value;
+      const name = document.getElementById('ch-name').value;
+      const desc = document.getElementById('ch-desc').value;
+      if(state.user.points < 50) { showToast("Not enough points (Need 50 PTS).", "error"); return; }
+      state.user.points -= 50;
+      state.channels.unshift({ id: 'ch-'+Date.now(), name, link, desc, emojis:['❤️','🔥','👍'], avatar:'https://api.dicebear.com/7.x/shapes/svg?seed='+name, status:'pending', reactionsCount:0, targetReactions:100, ownerName:state.user.name });
+      e.target.reset();
+      showToast("Channel submitted for moderation!");
+      refreshAllViews();
+    };
+
+    function renderMyChannels() {
+      const list = document.getElementById('my-channels-list');
+      const mine = state.channels.filter(c => c.ownerName === state.user.name);
+      list.innerHTML = mine.length ? mine.map(c => `
+        <div class="p-3.5 rounded-2xl bg-black/40 border border-gray-800 flex justify-between items-center text-xs">
+          <div>
+            <span class="font-bold">${c.name}</span>
+            <span class="ml-2 px-2 py-0.5 rounded text-[10px] ${c.status==='approved'?'bg-emerald-500/20 text-emerald-300':'bg-amber-500/20 text-amber-300'}">${c.status}</span>
+          </div>
+          <span class="text-gray-400">${c.reactionsCount}/${c.targetReactions} reactions</span>
+        </div>`).join('') : '<p class="text-xs text-gray-400">No channels submitted yet.</p>';
+    }
+
+    window.claimDailyCheckin = function() {
+      if(state.user.dailyCheckedIn) { showToast("Already claimed today!", "error"); return; }
+      state.user.dailyCheckedIn = true;
+      state.user.points += 25;
+      document.getElementById('daily-checkin-btn').textContent = "Claimed ✓";
+      showToast("+25 Daily Points added!");
+      refreshAllViews();
+    };
+
+    function renderLeaderboard() {
+      const lb = document.getElementById('leaderboard-list');
+      lb.innerHTML = `
+        <div class="p-3 rounded-xl bg-black/40 flex justify-between text-xs font-bold border border-[#00FF88]/30">
+          <span>🥇 ${state.user.name} (You)</span><span class="text-[#00FF88]">${state.user.points} PTS</span>
+        </div>
+        <div class="p-3 rounded-xl bg-black/40 flex justify-between text-xs">
+          <span>🥈 Nethmi Perera</span><span class="text-[#00FF88]">640 PTS</span>
+        </div>`;
+    }
+
+    function renderAdminQueue() {
+      const list = document.getElementById('admin-channels-list');
+      const pending = state.channels.filter(c => c.status === 'pending');
+      list.innerHTML = pending.length ? pending.map(c => `
+        <div class="p-3.5 rounded-2xl bg-black/40 border border-gray-800 flex justify-between items-center text-xs">
+          <div>
+            <span class="font-bold">${c.name}</span> <span class="text-gray-400">by ${c.ownerName}</span>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="moderate('${c.id}', 'approved')" class="px-3 py-1 rounded bg-emerald-500/20 text-emerald-300 font-bold">Approve</button>
+            <button onclick="moderate('${c.id}', 'rejected')" class="px-3 py-1 rounded bg-rose-500/20 text-rose-300 font-bold">Reject</button>
+          </div>
+        </div>`).join('') : '<p class="text-xs text-gray-400">No pending submissions.</p>';
+    }
+
+    window.moderate = function(id, status) {
+      const c = state.channels.find(x => x.id === id);
+      if(c) { c.status = status; showToast(`Channel ${status}!`); refreshAllViews(); }
+    };
+
+    function initCharts() {
+      const ctx = document.getElementById('engagementChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{ label: 'Verified Reactions', data: [120, 195, 170, 260, 310, 420, 485], borderColor: '#00FF88', backgroundColor: 'rgba(0,255,136,0.1)', fill: true, tension: 0.4 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#9CA3AF' } } }, scales: { x: { ticks: { color: '#9CA3AF' } }, y: { ticks: { color: '#9CA3AF' } } } }
+      });
+    }
+
+    window.toggleTheme = function() {
+      document.documentElement.classList.toggle('dark');
+      showToast("Theme toggled");
+    };
+    window.toggleLanguage = function() {
+      state.lang = state.lang === 'en' ? 'si' : 'en';
+      showToast(state.lang==='si'?'සිංහලට මාරු කරන ලදී':'Switched to English');
+    };
+    window.toggleSidebar = function() {
+      document.getElementById('sidebar').classList.toggle('-translate-x-full');
+      document.getElementById('sidebar-backdrop').classList.toggle('hidden');
+    };
+  </script>
+</body>
+</html>
